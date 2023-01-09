@@ -23,12 +23,15 @@ bootsector_code :
 	mov si, mess
 	call print
 
+	mov dx, 0x1234
+	call hex_print
+
 	; Hold
 	jmp $
 
 
 bootsector_data :
-	mess : db "Quints OS", 0
+	mess : db "Quints OS", 0x0a, 0xd, 0
 
 
 bootsector_magic :

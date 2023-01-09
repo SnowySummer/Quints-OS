@@ -8,6 +8,7 @@ IMAGE = build/boot.bin
 
 all : $(IMAGE)
 	qemu-system-x86_64 $(IMAGE)
+	$(MAKE) clean
 
 $(IMAGE) : $(BOOTLOADER)
 	nasm -f bin $(BOOTLOADER) -o $(IMAGE)
