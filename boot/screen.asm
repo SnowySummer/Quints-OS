@@ -7,8 +7,10 @@
 ;;; Set screen background
 ;;; 
 ;;; Example :
-;;; 	mov bl, color
+;;; 	mov bl, [color]
 ;;; 	call screen background
+;;; 
+;;;     color : db 0x09
 ;;; 
 screen_background :
     
