@@ -7,7 +7,7 @@ IMAGE = build/boot.bin
 
 
 all : $(IMAGE)
-	qemu-system-x86_64 $(IMAGE)
+	qemu-system-x86_64 -hda $(IMAGE)
 	$(MAKE) clean
 
 build : $(IMAGE)
