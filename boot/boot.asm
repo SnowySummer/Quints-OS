@@ -13,17 +13,22 @@ bootsector_init :
 
 bootsector_include :
 	%include "boot/print.asm"
+	%include "boot/screen.asm"
 
 bootsector_code :
 
 	; Prepare stack
 	mov sp, bootsector
 
+	; Set background color
+	mov bl, 0x09
+	call screen_background
+
 	; Print message
 	mov si, mess
 	call print
 
-	mov dx, 0x1234
+	mov dx, 0xabcd
 	call hex_print
 
 	; Hold
