@@ -24,13 +24,18 @@ bootsector :
 
 	bootsector_data :
 		DRIVE : db 0
-		mess : db "Quints OS", 0x0a, 0xd, 0
+		mess : db "Quints OS : Bootsector", 0x0a, 0xd, 0
 		
 	bootsector_code :
 
 		; Initialise
 		mov [DRIVE], dl
 		mov sp, bootsector
+
+
+		; Set video mode
+		mov al, 0x03
+		call screen_mode
 
 		; Set background color
 		mov bl, 0x09
@@ -69,7 +74,6 @@ bootloader_stage2 :
 	bootloader_stage2_code :
 		mov si, MESS1
 		call print
-
 		hlt
 
 	bootloader_stage2_finish :
