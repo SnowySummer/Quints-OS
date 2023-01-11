@@ -1,4 +1,7 @@
 BOOTLOADER = build/boot.bin
+KERNEL = build/kernel.bin
+PADDING = build/padding.bin
+OS = build/os_image
 
 
 .PHONY = all clean build
@@ -24,17 +27,41 @@ define pretty_print_body
     @printf "$(WHITE)\n"
 endef
 
-all : $(BOOTLOADER)
+all : $(OS)
 	$(call pretty_print_header,Run OS)
-	@qemu-system-x86_64 -hda $(BOOTLOADER)
+	@qemu-system-x86_64 -hda $(OS)
 	@$(MAKE) -s clean
 
-build : $(BOOTLOADER)
+build :
+	@$(MAKE)
+
+$(OS) : $(BOOTLOADER) $(KERNEL) $(PADDING)
+	$(call pretty_print_header,Linking)
+	@$(call pretty_print_body,OS,$(GREEN),Linking to $(OS))
+	@cat $(BOOTLOADER) $(KERNEL) $(PADDING) > $(OS)
 
 $(BOOTLOADER) :
 	$(call pretty_print_header,Building bootloader)
 	@$(MAKE) -s -C boot/
 
+$(KERNEL) :
+	$(call pretty_print_header,Building kernel)
+	@$(MAKE) -s -C kernel/
+
+$(PADDING) :
+	$(call pretty_print_header,Building padding)
+	$(call pretty_print_body,PADD,$(YELLOW),/dev/zero -> $(PADDING))
+	@dd if=/dev/zero of=$@ bs=512 count=20 status=none
+
 clean :
 	$(call pretty_print_header,Clean-up)
+
+	$(call pretty_print_body,CLEAN,$(RED),$(OS))
+	@rm -f $(OS)
+	
 	@$(MAKE) -C boot/ -s clean
+	
+	@$(MAKE) -C kernel/ -s clean
+	
+	$(call pretty_print_body,CLEAN,$(RED),$(PADDING))
+	@rm -f $(PADDING)

@@ -25,7 +25,7 @@ define pretty_print_body
 endef
 
 
-all : $(BIN)
+all :
 	@$(MAKE) -s $(BIN)
 	@mv $(BIN) ../build
 
@@ -34,5 +34,5 @@ $(BIN) : $(IMAGE)
 	@nasm -f bin $(BOOTLOADER) -o $(BIN)
 
 clean :
-	$(call pretty_print_body,CLEAN,$(RED),./build/$(BIN))
-	@rm -f ./build/$(BIN)
+	$(call pretty_print_body,CLEAN,$(RED),build/$(BIN))
+	@rm -f ../build/$(BIN)
