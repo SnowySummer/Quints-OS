@@ -21,21 +21,22 @@ bootsector :
 		jmp 0x0000:bootsector_code
 
 	bootsector_include :
-		%include "boot/print.asm"
-		%include "boot/screen.asm"
-		%include "boot/disk.asm"
+		%include "bootsector/print.asm"
+		%include "bootsector/screen.asm"
+		%include "bootsector/disk.asm"
 
 	bootsector_data :
 		DRIVE : db 0
-		mess : db "Quints OS : Bootsector", 0x0a, 0xd, 0
+		bootsector_welcome_message :
+			db "Welcome to Quints OS", 0x0a, 0xd
+			db "    Entered bootsector", 0x0a, 0x0d, 0
 		
 	bootsector_code :
 
 		; Initialise
 		mov [DRIVE], dl
 		mov sp, bootsector
-
-
+		
 		; Set video mode
 		mov al, 0x03
 		call screen_mode
@@ -45,8 +46,10 @@ bootsector :
 		call screen_background
 
 		; Print message
-		mov si, mess
+		mov si, bootsector_welcome_message
 		call print
+
+
 
 		; Load bootloader stage 2
 		xor ax, ax
@@ -74,16 +77,26 @@ bootsector :
 ; Bootloader stage 2
 bootloader_stage2 :
 	bootloader_stage2_include :
-		%include "boot/a20.asm"
-		%include "boot/long_mode.asm"
-		%include "boot/paging.asm"
-		%include "boot/gdt.asm"
+		%include "stage2/a20.asm"
+		%include "stage2/long_mode.asm"
+		%include "stage2/paging.asm"
+		%include "stage2/gdt.asm"
 	bootloader_stage2_data :
-		MESS1 : db "Hi there! Onto stage 2!", 0x0a, 0x0d, 0
+		stage2_welcome_mess :
+			db "    Entered stage 2 bootloader", 0x0a, 0x0d, 0
+		stage2_load_kernel_mess :
+			db "        Kernel loaded", 0x0a, 0x0d, 0
+		stage2_a20_mess :
+			db "        A20 line enabled", 0x0a, 0x0d, 0
+		stage2_check_long_mode_mess :
+			db "        Long mode is available", 0x0a, 0x0d, 0
+		stage2_paging_setup_mess :
+			db "        Paging setup", 0x0a, 0x0d,
+			db "        Going to enable Long Mode", 0x0a, 0x0d, 0
 	bootloader_stage2_code :
 
 		; Print message
-		mov si, MESS1
+		mov si, stage2_welcome_mess
 		call print
 
 
@@ -96,15 +109,26 @@ bootloader_stage2 :
 		mov cl, STAGE2_START + STAGE2_SIZE
 		mov dl, [DRIVE]
 		call read_disk
-
+        mov si, stage2_load_kernel_mess
+        call print
 
 		; Enable A20 line
 		call enable_A20
+        mov si, stage2_a20_mess
+        call print
 
 
-		; Check, setup and enable long mode
+		; Check long mode
 		call check_long_mode
+        mov si, stage2_check_long_mode_mess
+        call print
+
+		; Setup paging
 		call setup_paging
+        mov si, stage2_paging_setup_mess
+        call print
+
+		; Enable long mode
 		call enable_long_mode
 
 
@@ -116,6 +140,8 @@ bootloader_stage2 :
 		jmp $
 
 
+
+
 	bootloader_stage2_finish :
 		times 512 * STAGE2_SIZE - ($ - bootloader_stage2) db 0
 
@@ -124,10 +150,6 @@ bootloader_stage2 :
 kernel :
 
 	cli
-    mov edi, 0xB8000              ; Set the destination index to 0xB8000.
-    mov rax, 0x1F201F201F201F20   ; Set the A-register to 0x1F201F201F201F20.
-	mov [edi], rax
-
     hlt
 	jmp $
 

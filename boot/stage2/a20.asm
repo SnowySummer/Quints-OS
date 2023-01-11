@@ -34,9 +34,6 @@ test_A20 :
         jmp $
 
     test_A20_passed :
-        mov si, TEST_A20_PASSED_MESS
-        call print
         ret
 
-TEST_A20_FAILED_MESS : db 'A20 line disabled', 0x0a, 0x0d, 0
-TEST_A20_PASSED_MESS : db 'A20 line enabled', 0x0a, 0x0d, 0
+TEST_A20_FAILED_MESS : db "A20 line disabled", 0x0a, 0x0d, 0

@@ -1,8 +1,8 @@
-BOOTLOADER = build/boot.bin
+BOOTLOADER = boot.asm
 
+BIN = boot.bin
 
-.PHONY = all clean build
-
+.PHONY = all clean
 
 GREY   = \e[1;30m
 RED    = \e[1;31m
@@ -24,17 +24,15 @@ define pretty_print_body
     @printf "$(WHITE)\n"
 endef
 
-all : $(BOOTLOADER)
-	$(call pretty_print_header,Run OS)
-	@qemu-system-x86_64 -hda $(BOOTLOADER)
-	@$(MAKE) -s clean
 
-build : $(BOOTLOADER)
+all : $(BIN)
+	@$(MAKE) -s $(BIN)
+	@mv $(BIN) ../build
 
-$(BOOTLOADER) :
-	$(call pretty_print_header,Building bootloader)
-	@$(MAKE) -s -C boot/
+$(BIN) : $(IMAGE)
+	$(call pretty_print_body,BOOT,$(YELLOW),$(BOOTLOADER) -> $(BIN))
+	@nasm -f bin $(BOOTLOADER) -o $(BIN)
 
 clean :
-	$(call pretty_print_header,Clean-up)
-	@$(MAKE) -C boot/ -s clean
+	$(call pretty_print_body,CLEAN,$(RED),./build/$(BIN))
+	@rm -f ./build/$(BIN)
