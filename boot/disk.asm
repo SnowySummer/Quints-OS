@@ -53,5 +53,5 @@ read_disk :
         call print
         hlt
 
-    DISK_ERROR_MESS : db "Error reading disk", 0
+    DISK_ERROR_MESS : db "Error reading disk", 0x0a, 0x0d, 0
 
