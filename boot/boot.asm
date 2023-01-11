@@ -146,13 +146,4 @@ bootloader_stage2 :
 		times 512 * STAGE2_SIZE - ($ - bootloader_stage2) db 0
 
 
-[bits 64]
 kernel :
-
-	cli
-    hlt
-	jmp $
-
-
-
-times 512 * KERNEL_SIZE - ($ - kernel) db 0

@@ -1,7 +1,8 @@
 [bits 64]
 [extern main]
 
-pre-kernel :
+pre_kernel :
+    cli
     call main
 
     hlt
