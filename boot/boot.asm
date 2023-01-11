@@ -41,10 +41,6 @@ bootsector :
 		mov al, 0x03
 		call screen_mode
 
-		; Set background color
-		mov bl, 0x09
-		call screen_background
-
 		; Print message
 		mov si, bootsector_welcome_message
 		call print
